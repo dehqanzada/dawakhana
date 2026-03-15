@@ -45,6 +45,20 @@ const Sale = () => {
   // Auto-focus barcode input
   useEffect(() => {
     barcodeInputRef.current?.focus();
+
+    const handleGlobalClick = (e) => {
+      // If the user clicked on an input or a button, we let them interact with it.
+      // Otherwise, we refocus the barcode input.
+      const isInput = e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA';
+      const isButton = e.target.closest('button');
+      
+      if (!isInput && !isButton) {
+        barcodeInputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener('click', handleGlobalClick);
+    return () => window.removeEventListener('click', handleGlobalClick);
   }, []);
 
   const fetchCustomers = async () => {
@@ -206,6 +220,16 @@ const Sale = () => {
               className="w-full pl-14 pr-4 py-4 bg-slate-100 border-none rounded-2xl text-xl font-mono focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-400"
               placeholder="Barkodu okutun veya manuel yazın..."
               value={barcode}
+              onBlur={(e) => {
+                // Return focus to barcode if it was lost to a non-input element
+                setTimeout(() => {
+                  const activeTag = document.activeElement?.tagName;
+                  const isAnotherInput = ['INPUT', 'SELECT', 'TEXTAREA'].includes(activeTag);
+                  if (!isAnotherInput) {
+                    barcodeInputRef.current?.focus();
+                  }
+                }, 10);
+              }}
               onChange={(e) => setBarcode(e.target.value)}
             />
           </form>
