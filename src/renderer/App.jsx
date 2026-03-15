@@ -50,11 +50,9 @@ const Sidebar = ({ user, onLogout }) => {
 
   return (
     <div className="w-64 bg-slate-900 text-white flex flex-col min-h-screen shadow-xl">
-      <div className="p-6 border-b border-slate-800 flex items-center gap-3">
-        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-          <span className="font-bold text-lg">D</span>
-        </div>
-        <h1 className="text-xl font-bold tracking-tight">Dawakhana</h1>
+      <div className="p-6 border-b border-slate-800 flex items-center gap-4">
+        <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain rounded-lg shadow-lg shadow-blue-500/20" />
+        <h1 className="text-xl font-black tracking-tight text-white uppercase italic">Dawakhana</h1>
       </div>
 
       <nav className="flex-1 mt-6 px-4 space-y-1">
