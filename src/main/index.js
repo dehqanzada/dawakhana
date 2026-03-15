@@ -20,7 +20,8 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.cjs'),
       nodeIntegration: false,
       contextIsolation: true
-    }
+    },
+    icon: path.join(__dirname, '../../assets/icons/logo.png')
   });
 
   // Load from vite dev server in development
