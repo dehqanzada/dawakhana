@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   PackageSearch, 
   PlusCircle, 
@@ -27,6 +27,8 @@ const StockOperations = () => {
   const [selectedMed, setSelectedMed] = useState(null);
   const [loading, setLoading] = useState(false);
   
+  const searchRef = useRef(null);
+  
   // New Entry Form State
   const [formData, setFormData] = useState({
     batchNumber: '',
@@ -46,6 +48,23 @@ const StockOperations = () => {
   const [historyLoading, setHistoryLoading] = useState(false);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null, loading: false });
   const [editingBatch, setEditingBatch] = useState(null);
+
+  useEffect(() => {
+    searchRef.current?.focus();
+
+    const handleGlobalClick = (e) => {
+      // Allow interaction with other inputs and buttons
+      const isInput = e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA';
+      const isButton = e.target.closest('button');
+      
+      if (!isInput && !isButton) {
+        searchRef.current?.focus();
+      }
+    };
+
+    window.addEventListener('click', handleGlobalClick);
+    return () => window.removeEventListener('click', handleGlobalClick);
+  }, []);
 
   useEffect(() => {
     if (activeTab === 'new' && searchTerm.length > 1) {
@@ -194,10 +213,20 @@ const StockOperations = () => {
                 <div className="relative">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                   <input 
+                    ref={searchRef}
                     type="text"
                     placeholder="İsim veya Barkod..."
                     className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
                     value={searchTerm}
+                    onBlur={(e) => {
+                      setTimeout(() => {
+                        const activeTag = document.activeElement?.tagName;
+                        const isAnotherInput = ['INPUT', 'SELECT', 'TEXTAREA'].includes(activeTag);
+                        if (!isAnotherInput) {
+                          searchRef.current?.focus();
+                        }
+                      }, 10);
+                    }}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
