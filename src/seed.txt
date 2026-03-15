@@ -1,0 +1,51 @@
+-- ADMIN KULLANICISI
+-- Şifre: 1234 (bcrypt hash)
+INSERT INTO users (username, password_hash, role, is_active)
+VALUES (
+  'admin',
+  '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+  'admin',
+  true
+);
+
+-- MARKALAR
+INSERT INTO brands (name) VALUES
+  ('Atabay'),
+  ('Abdi İbrahim'),
+  ('Pfizer'),
+  ('Bayer'),
+  ('Novartis');
+
+-- KATEGORİLER
+INSERT INTO categories (name) VALUES
+  ('Antibiyotik'),
+  ('Ağrı Kesici'),
+  ('Vitamin'),
+  ('Kardiyoloji'),
+  ('Diyabet'),
+  ('Solunum');
+
+-- ÖRNEK İLAÇLAR
+INSERT INTO medicines (name, brand_id, barcode, unit, unit_price, stock_quantity, shelf_number, units_per_carton)
+VALUES
+  ('Augmentin 1000mg', 2, '8699504010016', 'kutu', 85.50, 50, 'A-12', 10),
+  ('Parol 500mg', 1, '8699504150013', 'kutu', 12.75, 120, 'B-03', 20),
+  ('Majezik 100mg', 1, '8699504090018', 'kutu', 28.00, 80, 'B-04', 20),
+  ('Cipro 500mg', 3, '8699504200014', 'kutu', 95.00, 30, 'A-15', 10),
+  ('Coumadin 5mg', 4, '8699504300011', 'kutu', 45.00, 60, 'C-01', 30);
+
+-- BATCH'LER (her ilaca bir parti)
+INSERT INTO batches (medicine_id, batch_number, batch_barcode, expiry_date, total_quantity, remaining_quantity, carton_count)
+VALUES
+  (1, 'AUG-2024-001', 'BAT-8699504010016-1', '2026-06-30', 50, 50, 5),
+  (2, 'PAR-2024-001', 'BAT-8699504150013-1', '2026-12-31', 120, 120, 6),
+  (3, 'MAJ-2024-001', 'BAT-8699504090018-1', '2025-08-31', 80, 80, 4),
+  (4, 'CIP-2024-001', 'BAT-8699504200014-1', '2026-03-31', 30, 30, 3),
+  (5, 'COU-2024-001', 'BAT-8699504300011-1', '2026-09-30', 60, 60, 2);
+
+-- ÖRNEK MÜŞTERİLER
+INSERT INTO customers (name, phone, address, credit_limit, balance)
+VALUES
+  ('Ahmad Karimi', '0700123456', 'Kabul, Karte Se', 5000.00, 0.00),
+  ('Mohammad Hasib', '0790234567', 'Kabul, Wazir Akbar Khan', 3000.00, 0.00),
+  ('Fatima Ahmadi', '0780345678', 'Kabul, Macrorayon', 2000.00, 0.00);

@@ -1,0 +1,200 @@
+-- ENUM TİPLERİ
+CREATE TYPE "enum_users_role" AS ENUM ('admin', 'cashier');
+CREATE TYPE "enum_sales_payment_type" AS ENUM ('nakit', 'veresiye');
+CREATE TYPE "enum_payments_type" AS ENUM ('tahsilat', 'iade');
+
+-- USERS
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(100) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  role "enum_users_role" NOT NULL DEFAULT 'cashier',
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  "createdAt" TIMESTAMP NOT NULL DEFAULT NOW(),
+  "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- BRANDS
+CREATE TABLE brands (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  "createdAt" TIMESTAMP NOT NULL DEFAULT NOW(),
+  "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- CATEGORIES
+CREATE TABLE categories (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  "createdAt" TIMESTAMP NOT NULL DEFAULT NOW(),
+  "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- MEDICINES
+CREATE TABLE medicines (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  brand_id INTEGER REFERENCES brands(id),
+  barcode VARCHAR(100) UNIQUE,
+  unit VARCHAR(50) DEFAULT 'paket',
+  unit_price DECIMAL(10,2) DEFAULT 0.00,
+  stock_quantity INTEGER DEFAULT 0,
+  shelf_number VARCHAR(50),
+  units_per_carton INTEGER DEFAULT 1,
+  is_active BOOLEAN DEFAULT true,
+  deactivation_reason TEXT,
+  "createdAt" TIMESTAMP NOT NULL DEFAULT NOW(),
+  "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- MEDICINE_CATEGORIES
+CREATE TABLE medicine_categories (
+  medicine_id INTEGER NOT NULL REFERENCES medicines(id) ON DELETE CASCADE,
+  category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+  PRIMARY KEY (medicine_id, category_id),
+  "createdAt" TIMESTAMP NOT NULL DEFAULT NOW(),
+  "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- BATCHES
+CREATE TABLE batches (
+  id SERIAL PRIMARY KEY,
+  medicine_id INTEGER NOT NULL REFERENCES medicines(id),
+  batch_number VARCHAR(100),
+  batch_barcode VARCHAR(100) UNIQUE,
+  expiry_date DATE,
+  total_quantity INTEGER NOT NULL,
+  remaining_quantity INTEGER NOT NULL,
+  carton_count INTEGER,
+  "createdAt" TIMESTAMP NOT NULL DEFAULT NOW(),
+  "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- CUSTOMERS
+CREATE TABLE customers (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  phone VARCHAR(50),
+  address TEXT,
+  credit_limit DECIMAL(10,2) DEFAULT 0.00,
+  balance DECIMAL(10,2) DEFAULT 0.00,
+  is_active BOOLEAN DEFAULT true,
+  "createdAt" TIMESTAMP NOT NULL DEFAULT NOW(),
+  "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- SALES
+CREATE TABLE sales (
+  id SERIAL PRIMARY KEY,
+  batch_id INTEGER NOT NULL REFERENCES batches(id),
+  customer_id INTEGER REFERENCES customers(id),
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  quantity INTEGER NOT NULL,
+  unit_price DECIMAL(10,2) NOT NULL,
+  total_price DECIMAL(10,2) NOT NULL,
+  payment_type "enum_sales_payment_type" NOT NULL DEFAULT 'nakit',
+  sale_date TIMESTAMP DEFAULT NOW(),
+  "createdAt" TIMESTAMP NOT NULL DEFAULT NOW(),
+  "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- RETURNS
+CREATE TABLE returns (
+  id SERIAL PRIMARY KEY,
+  sale_id INTEGER NOT NULL REFERENCES sales(id),
+  quantity INTEGER NOT NULL,
+  reason TEXT,
+  return_date TIMESTAMP DEFAULT NOW(),
+  "createdAt" TIMESTAMP NOT NULL DEFAULT NOW(),
+  "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- PAYMENTS
+CREATE TABLE payments (
+  id SERIAL PRIMARY KEY,
+  customer_id INTEGER NOT NULL REFERENCES customers(id),
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  amount DECIMAL(10,2) NOT NULL,
+  type "enum_payments_type" NOT NULL DEFAULT 'tahsilat',
+  note TEXT,
+  payment_date TIMESTAMP DEFAULT NOW(),
+  "createdAt" TIMESTAMP NOT NULL DEFAULT NOW(),
+  "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- ACTIVITY_LOGS
+CREATE TABLE activity_logs (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id),
+  action_type VARCHAR(100),
+  target_table VARCHAR(100),
+  target_id INTEGER,
+  note TEXT,
+  "createdAt" TIMESTAMP NOT NULL DEFAULT NOW(),
+  "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- ==========================================
+-- SEED DATA
+-- ==========================================
+
+-- Admin kullanıcısı (şifre: 1234)
+INSERT INTO users (username, password_hash, role, is_active) VALUES (
+  'admin',
+  '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+  'admin',
+  true
+);
+
+-- Kasiyer kullanıcısı (şifre: 1234)
+INSERT INTO users (username, password_hash, role, is_active) VALUES (
+  'kasiyer',
+  '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+  'cashier',
+  true
+);
+
+-- Markalar
+INSERT INTO brands (name) VALUES
+  ('Atabay'),
+  ('Abdi İbrahim'),
+  ('Pfizer'),
+  ('Bayer'),
+  ('Novartis'),
+  ('Santa Farma'),
+  ('Deva');
+
+-- Kategoriler
+INSERT INTO categories (name) VALUES
+  ('Antibiyotik'),
+  ('Ağrı Kesici'),
+  ('Vitamin'),
+  ('Kardiyoloji'),
+  ('Diyabet'),
+  ('Solunum'),
+  ('Sindirim'),
+  ('Cilt');
+
+-- Örnek ilaçlar
+INSERT INTO medicines (name, brand_id, barcode, unit, unit_price, stock_quantity, shelf_number, units_per_carton) VALUES
+  ('Augmentin 1000mg', 2, '8699504010016', 'kutu', 85.50, 50, 'A-12', 10),
+  ('Parol 500mg',      1, '8699504150013', 'kutu', 12.75, 120, 'B-03', 20),
+  ('Majezik 100mg',    1, '8699504090018', 'kutu', 28.00, 80,  'B-04', 20),
+  ('Cipro 500mg',      3, '8699504200014', 'kutu', 95.00, 30,  'A-15', 10),
+  ('Coumadin 5mg',     4, '8699504300011', 'kutu', 45.00, 60,  'C-01', 30);
+
+-- Batch'ler
+INSERT INTO batches (medicine_id, batch_number, batch_barcode, expiry_date, total_quantity, remaining_quantity, carton_count) VALUES
+  (1, 'AUG-2024-001', 'BAT-AUG-001', '2026-06-30', 50,  50,  5),
+  (2, 'PAR-2024-001', 'BAT-PAR-001', '2026-12-31', 120, 120, 6),
+  (3, 'MAJ-2024-001', 'BAT-MAJ-001', '2026-08-31', 80,  80,  4),
+  (4, 'CIP-2024-001', 'BAT-CIP-001', '2026-03-31', 30,  30,  3),
+  (5, 'COU-2024-001', 'BAT-COU-001', '2026-09-30', 60,  60,  2);
+
+-- Örnek müşteriler
+INSERT INTO customers (name, phone, address, credit_limit, balance) VALUES
+  ('Ahmad Karimi',   '0700123456', 'Kabul, Karte Se',          5000.00, 0.00),
+  ('Mohammad Hasib', '0790234567', 'Kabul, Wazir Akbar Khan',  3000.00, 0.00),
+  ('Fatima Ahmadi',  '0780345678', 'Kabul, Macrorayon',        2000.00, 0.00);
