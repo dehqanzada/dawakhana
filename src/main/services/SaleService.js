@@ -34,7 +34,7 @@ export default class SaleService {
         const medicine = await Medicine.findByPk(medicine_id, { transaction: t, lock: true });
 
         if (!medicine || medicine.stock_quantity < quantity) {
-          throw new Error(`Not enough stock for medicine ID: ${medicine_id}`);
+          throw new Error(`"${medicine?.name || medicine_id}" için yeterli stok yok. (Mevcut Stok: ${medicine?.stock_quantity || 0})`);
         }
 
         for (const batch of batches) {
