@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
 import { Package, Plus, Search, AlertCircle, Calendar, RefreshCcw, Edit2, Trash2, History, ArrowBigUp, ArrowBigDown, X, Loader2 } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
 import MedicineForm from '../components/MedicineForm';
 import ConfirmModal from '../components/ConfirmModal';
 
@@ -11,6 +11,8 @@ const Stock = () => {
   const [editingMedicine, setEditingMedicine] = useState(null);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null, loading: false });
   const [historyModal, setHistoryModal] = useState({ isOpen: false, med: null, data: [], loading: false });
+  
+  const searchRef = useRef(null);
   
   const user = JSON.parse(localStorage.getItem('user'));
   const isAdmin = user?.role === 'admin';
@@ -29,6 +31,19 @@ const Stock = () => {
 
   useEffect(() => {
     fetchMedicines();
+    searchRef.current?.focus();
+
+    const handleGlobalClick = (e) => {
+      const isInput = e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA';
+      const isButton = e.target.closest('button');
+      
+      if (!isInput && !isButton) {
+        searchRef.current?.focus();
+      }
+    };
+
+    window.addEventListener('click', handleGlobalClick);
+    return () => window.removeEventListener('click', handleGlobalClick);
   }, []);
 
   const getExpiryStatus = (batches) => {
@@ -116,10 +131,20 @@ const Stock = () => {
         <div className="lg:col-span-3 relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
           <input 
+            ref={searchRef}
             type="text"
             placeholder="İlaç adı veya barkod ile ara..."
             className="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-400 font-medium"
             value={searchTerm}
+            onBlur={(e) => {
+              setTimeout(() => {
+                const activeTag = document.activeElement?.tagName;
+                const isAnotherInput = ['INPUT', 'SELECT', 'TEXTAREA'].includes(activeTag);
+                if (!isAnotherInput) {
+                  searchRef.current?.focus();
+                }
+              }, 10);
+            }}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
