@@ -28,8 +28,9 @@ const Login = ({ onLoginSuccess }) => {
       <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
         <div className="p-8">
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold text-slate-800">Dawakhana</h1>
-            <p className="text-slate-500 mt-2">Eczane Yönetim Paneli</p>
+            <img src="/logo.png" alt="Dawakhana Logo" className="w-20 h-20 mx-auto mb-4 object-contain" />
+            <h1 className="text-3xl font-black text-slate-800 uppercase italic">Dawakhana</h1>
+            <p className="text-slate-500 mt-2 font-medium">Eczane Yönetim Paneli</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
