@@ -2,6 +2,8 @@
   "name": "dawakhana-app",
   "version": "1.0.0",
   "description": "Pharmacy Management Desktop Application",
+  "author": "Dawakhana",
+  "license": "MIT",
   "main": "src/main/index.js",
   "type": "module",
   "scripts": {
@@ -14,22 +16,37 @@
   "build": {
     "appId": "com.dawakhana.app",
     "productName": "Dawakhana",
+    "asar": true,
     "directories": {
-      "output": "dist-electron"
+      "output": "dist-electron",
+      "buildResources": "assets"
     },
     "files": [
       "dist/**/*",
-      "src/main/**/*"
+      "src/main/**/*",
+      "package.json"
     ],
+    "extraMetadata": {
+      "main": "src/main/index.js"
+    },
+    "artifactName": "${productName}-Setup-${version}.${ext}",
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icons/icon.ico"
+    },
     "mac": {
       "category": "public.app-category.medical"
     },
-    "win": {
-      "target": "nsis",
-      "icon": "assets/icons/icon.ico"
-    },
     "linux": {
-      "target": "AppImage"
+      "target": "AppImage",
+      "icon": "assets/icons"
     }
   },
   "dependencies": {
