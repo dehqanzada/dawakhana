@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  HashRouter as Router, 
-  Routes, 
-  Route, 
-  Navigate, 
-  Link, 
-  useLocation 
+import {
+  HashRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  Link,
+  useLocation
 } from 'react-router-dom';
-import { 
-  ShoppingCart, 
-  Package, 
-  Users, 
-  BarChart3, 
-  Settings as SettingsIcon, 
+import {
+  ShoppingCart,
+  Package,
+  Users,
+  BarChart3,
+  Settings as SettingsIcon,
   LogOut,
   LayoutDashboard,
   RotateCcw,
@@ -29,6 +29,7 @@ import StockOperations from './pages/StockOperations';
 import Returns from './pages/Returns';
 import UsersPage from './pages/Users';
 import { Settings } from './pages/PlaceholderPages';
+import logo from "./assets/logo.png";
 
 // --- Sidebar Component ---
 const Sidebar = ({ user, onLogout }) => {
@@ -51,7 +52,7 @@ const Sidebar = ({ user, onLogout }) => {
   return (
     <div className="w-64 bg-slate-900 text-white flex flex-col min-h-screen shadow-xl">
       <div className="p-6 border-b border-slate-800 flex items-center gap-4">
-        <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain rounded-lg shadow-lg shadow-blue-500/20" />
+        <img src={logo} alt="Logo" className="w-10 h-10 object-contain rounded-lg shadow-lg shadow-blue-500/20" />
         <h1 className="text-xl font-black tracking-tight text-white uppercase italic">Dawakhana</h1>
       </div>
 
@@ -62,11 +63,10 @@ const Sidebar = ({ user, onLogout }) => {
             <Link
               key={item.name}
               to={item.path}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all group ${
-                isActive 
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' 
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all group ${isActive
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50'
                   : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-              }`}
+                }`}
             >
               <item.icon size={20} className={isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'} />
               <span className="font-medium">{item.name}</span>
@@ -84,7 +84,7 @@ const Sidebar = ({ user, onLogout }) => {
             <p className="text-sm font-bold truncate">{user?.username}</p>
             <p className="text-xs text-slate-500 uppercase">{user?.role}</p>
           </div>
-          <button 
+          <button
             onClick={onLogout}
             className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
             title="Çıkış Yap"
@@ -108,7 +108,7 @@ const AppLayout = ({ user, handleLogout }) => {
         <Routes>
           <Route path="/sale" element={<Sale />} />
           <Route path="/stock" element={<Stock />} />
-          
+
           {/* Admin Only Routes */}
           {isAdmin ? (
             <>

@@ -1,23 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import logo from "../assets/logo.png";
 
 const Login = ({ onLoginSuccess }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       const user = await window.api.auth.login(username, password);
       // Save to localStorage
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify(user));
       onLoginSuccess(user);
     } catch (err) {
-      setError(err.message || 'Giriş yapılamadı.');
+      setError(err.message || "Giriş yapılamadı.");
     } finally {
       setLoading(false);
     }
@@ -28,9 +29,17 @@ const Login = ({ onLoginSuccess }) => {
       <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
         <div className="p-8">
           <div className="text-center mb-10">
-            <img src="/logo.png" alt="Dawakhana Logo" className="w-20 h-20 mx-auto mb-4 object-contain" />
-            <h1 className="text-3xl font-black text-slate-800 uppercase italic">Dawakhana</h1>
-            <p className="text-slate-500 mt-2 font-medium">Eczane Yönetim Paneli</p>
+            <img
+              src={logo}
+              alt="Dawakhana Logo"
+              className="w-20 h-20 mx-auto mb-4 object-contain"
+            />
+            <h1 className="text-3xl font-black text-slate-800 uppercase italic">
+              Dawakhana
+            </h1>
+            <p className="text-slate-500 mt-2 font-medium">
+              Eczane Yönetim Paneli
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -73,13 +82,15 @@ const Login = ({ onLoginSuccess }) => {
               disabled={loading}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg transform active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100"
             >
-              {loading ? 'Giriş Yapılıyor...' : 'Giriş Yap'}
+              {loading ? "Giriş Yapılıyor..." : "Giriş Yap"}
             </button>
           </form>
         </div>
-        
+
         <div className="bg-slate-50 p-4 text-center border-t border-slate-100">
-          <p className="text-xs text-slate-400 font-medium">© 2026 MahiJCompany</p>
+          <p className="text-xs text-slate-400 font-medium">
+            © 2026 MahiJCompany
+          </p>
         </div>
       </div>
     </div>
